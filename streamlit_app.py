@@ -26,6 +26,8 @@ df["Rate"] = df["Deaths"] / df["Pop"] * 100_000
 
 # }}
 
+st.write("Hello April")
+
 
 @st.cache
 def load_data():
