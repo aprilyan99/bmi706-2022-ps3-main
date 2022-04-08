@@ -1,6 +1,6 @@
 # bmi706-2022-ps3
 
-Hello, world!
+Hello, April Yan! 
 
 
 ## Requirements
