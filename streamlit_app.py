@@ -75,7 +75,10 @@ subset = subset[subset["Cancer"] == cancer]
 ### P2.4 ###
 
 
-### P2.5 ###
+### Bonus ###
+#age_dropdown = alt.binding_select(options=ages)
+#age_select = alt.selection_single(fields=['Age'], bind=age_dropdown, name = 'age',init={'Age':ages[0]})
+# age_selection = alt.selection_single(fields=['Age'],bind='legend',name='cancer')
 ages = [
     "Age <5",
     "Age 5-14",
@@ -86,23 +89,51 @@ ages = [
     "Age 55-64",
     "Age >64",
 ]
+selection = alt.selection_single(fields=['Country'],bind='legend')
+base = alt.Chart(subset).transform_filter(selection)
+chart2 = base.mark_bar().encode(
+    x=alt.X("Age", sort=ages),
+    y=alt.Y("Pop", axis=alt.Axis(title='Population')),
+    color = 'Country',
+    tooltip=["Country","Age","Pop"],
+).add_selection(selection
+).properties(
+    width = 300,
+    height = 200
+)
+### Bonus ###
 
-chart = alt.Chart(subset).mark_rect().encode(
+
+### P2.5 ###
+#selector = alt.selection_multi(fields = ['Age'])  ## link selection for Bonus 
+#color = alt.condition(selection,
+                    #alt.Color('Country:N'),
+                    #alt.value('lightgray'))
+
+#country_select = alt.selection_single(fields=countries)
+
+chart = base.mark_rect().encode(
     x=alt.X("Age", sort=ages),
     y=alt.Y("Country"),
-    color=alt.Color("Rate", scale=alt.Scale(type='log',domain=(0.01,1000),clamp=True), title="Mortality rate per 100k"),
-    tooltip=["Rate"],
+    color=alt.Color('Rate', scale=alt.Scale(type='log',domain=(0.01,1000),clamp=True), title="Mortality rate per 100k"),
+    tooltip=["Country","Age","Rate"],
 ).properties(
     title=f"{cancer} mortality rates for {'males' if sex == 'M' else 'females'} in {year}",
-)
+    width = 300,
+    height = 200
+).transform_filter(selection)
 ### P2.5 ###
 
-### Bonus ###
 
+st.write("Click legend to select country")
 
-### Bonus ###
+chart3 = alt.vconcat(chart, chart2
+).resolve_scale(
+    color='independent'
+)
 
-st.altair_chart(chart, use_container_width=True)
+#st.altair_chart(chart, use_container_width=True)
+st.altair_chart(chart3, use_container_width=True)
 
 countries_in_subset = subset["Country"].unique()
 if len(countries_in_subset) != len(countries):
